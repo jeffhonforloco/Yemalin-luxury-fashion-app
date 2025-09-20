@@ -9,6 +9,7 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import { MarketingProvider } from "@/providers/MarketingProvider";
 import { VIPProvider } from "@/providers/VIPProvider";
 import Head from "expo-router/head";
+import { trpc, trpcClient } from "@/lib/trpc";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -253,18 +254,20 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <MarketingProvider>
-          <AuthProvider>
-            <VIPProvider>
-              <CartProvider>
-                <RootLayoutNav />
-              </CartProvider>
-            </VIPProvider>
-          </AuthProvider>
-        </MarketingProvider>
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <MarketingProvider>
+            <AuthProvider>
+              <VIPProvider>
+                <CartProvider>
+                  <RootLayoutNav />
+                </CartProvider>
+              </VIPProvider>
+            </AuthProvider>
+          </MarketingProvider>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }

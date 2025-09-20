@@ -14,6 +14,7 @@ import { router } from "expo-router";
 import { Filter, X, ShoppingBag } from "lucide-react-native";
 import { products } from "@/data/products";
 import { useCart } from "@/providers/CartProvider";
+import BackendTest from "@/components/BackendTest";
 
 const { width } = Dimensions.get("window");
 
@@ -204,6 +205,9 @@ export default function ShopScreen() {
         </View>
       )}
 
+      {/* Backend Test - Remove this after testing */}
+      <BackendTest />
+      
       {/* Products Grid */}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.productsGrid}>
