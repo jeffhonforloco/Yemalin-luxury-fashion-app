@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Yemalin Luxury Fashion App",
-    "slug": "yemalin-luxury-fashion-app",
+    "name": "Yemalin",
+    "slug": "yemalin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.rork.yemalin-luxury-fashion-app",
+      "bundleIdentifier": "app.yemalin",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos",
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.yemalin-luxury-fashion-app",
+      "package": "app.yemalin",
       "permissions": [
         "android.permission.VIBRATE",
         "CAMERA",
