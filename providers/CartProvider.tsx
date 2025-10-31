@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import createContextHook from "@nkzw/create-context-hook";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { emailStorage } from "@/lib/emailStorage";
 
 export interface CartItem {
   id: string;
@@ -24,11 +25,14 @@ interface CartContextType {
   getTotal: () => number;
   getItemQuantity: (id: string, size: string) => number;
   isInCart: (id: string, size: string) => boolean;
+  trackAbandonedCart: (email?: string) => Promise<void>;
 }
 
 export const [CartProvider, useCart] = createContextHook<CartContextType>(() => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const abandonCartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cartLastModifiedRef = useRef<Date>(new Date());
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -36,6 +40,37 @@ export const [CartProvider, useCart] = createContextHook<CartContextType>(() => 
   useEffect(() => {
     loadCart();
   }, []);
+
+  // Track abandoned cart when user leaves with items in cart
+  useEffect(() => {
+    if (items.length > 0) {
+      // Reset timer whenever cart changes
+      cartLastModifiedRef.current = new Date();
+      
+      if (abandonCartTimeoutRef.current) {
+        clearTimeout(abandonCartTimeoutRef.current);
+      }
+
+      // Set timer to mark cart as abandoned after 30 minutes of inactivity
+      abandonCartTimeoutRef.current = setTimeout(async () => {
+        if (items.length > 0) {
+          const userData = await AsyncStorage.getItem('@yemalin_user');
+          const email = userData ? JSON.parse(userData)?.email : null;
+          const lastEmail = await AsyncStorage.getItem('@yemalin_last_email');
+          const emailToUse = email || lastEmail;
+          if (emailToUse) {
+            await trackAbandonedCart(emailToUse);
+          }
+        }
+      }, 30 * 60 * 1000); // 30 minutes
+
+      return () => {
+        if (abandonCartTimeoutRef.current) {
+          clearTimeout(abandonCartTimeoutRef.current);
+        }
+      };
+    }
+  }, [items]);
 
   const loadCart = async () => {
     try {
@@ -129,6 +164,42 @@ export const [CartProvider, useCart] = createContextHook<CartContextType>(() => 
     return items.some(i => i.id === id && i.size === size);
   }, [items]);
 
+  const trackAbandonedCart = useCallback(async (email?: string) => {
+    if (items.length === 0) return;
+    
+    try {
+      let emailToUse = email;
+      if (!emailToUse) {
+        const userData = await AsyncStorage.getItem('@yemalin_user');
+        emailToUse = userData ? JSON.parse(userData)?.email : null;
+      }
+      if (!emailToUse) {
+        emailToUse = await AsyncStorage.getItem('@yemalin_last_email');
+      }
+      if (!emailToUse) return;
+
+      // Save abandoned cart
+      await emailStorage.saveAbandonedCart(emailToUse, items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        size: item.size,
+        image: item.image,
+        quantity: item.quantity,
+      })));
+
+      // Also save email if not already saved
+      await emailStorage.saveEmail(emailToUse, 'cart', {
+        cartValue: getTotal(),
+        cartItems: items,
+      });
+
+      console.log('🛒 Cart abandoned tracked:', { email: emailToUse, itemCount: items.length, total: getTotal() });
+    } catch (error) {
+      console.error('Error tracking abandoned cart:', error);
+    }
+  }, [items, getTotal]);
+
   return {
     items,
     itemCount,
@@ -140,5 +211,6 @@ export const [CartProvider, useCart] = createContextHook<CartContextType>(() => 
     getTotal,
     getItemQuantity,
     isInCart,
+    trackAbandonedCart,
   };
 });

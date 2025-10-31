@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import createContextHook from '@nkzw/create-context-hook';
+import { emailStorage } from '@/lib/emailStorage';
+import { ReminderSystem } from '@/lib/reminderSystem';
 
 interface MarketingState {
   // Email & SMS Automation
@@ -227,6 +229,17 @@ export const [MarketingProvider, useMarketing] = createContextHook(() => {
     
     loadMarketingState();
   }, []);
+
+  // Start reminder system on mount
+  useEffect(() => {
+    if (state.abandonedCartFlow.enabled) {
+      ReminderSystem.start();
+    }
+    
+    return () => {
+      ReminderSystem.stop();
+    };
+  }, [state.abandonedCartFlow.enabled]);
   
   // Save marketing state to storage
   const saveMarketingState = useCallback(async (newState: MarketingState) => {
@@ -241,6 +254,15 @@ export const [MarketingProvider, useMarketing] = createContextHook(() => {
   // Email Automation Functions
   const sendAbandonedCartEmail = useCallback(async (email: string, cartItems: any[]) => {
     console.log('🔥 ABANDONED CART EMAIL:', { email, cartItems });
+    
+    // Save email if not already saved
+    await emailStorage.saveEmail(email, 'cart', {
+      cartValue: cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0),
+      cartItems,
+    });
+    
+    // Save abandoned cart
+    await emailStorage.saveAbandonedCart(email, cartItems);
     
     // Simulate Klaviyo API call
     console.log('Email data:', {
@@ -257,7 +279,7 @@ export const [MarketingProvider, useMarketing] = createContextHook(() => {
     // Track conversion event
     const conversionEvent = {
       event: 'abandoned_cart_email_sent',
-      data: { email, cartValue: cartItems.reduce((sum, item) => sum + item.price, 0) },
+      data: { email, cartValue: cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) },
       timestamp: new Date().toISOString(),
       id: Math.random().toString(36).substr(2, 9)
     };
@@ -444,6 +466,11 @@ export const [MarketingProvider, useMarketing] = createContextHook(() => {
     const newCount = waitlistCount + 1;
     setWaitlistCount(newCount);
     await AsyncStorage.setItem('waitlist_count', newCount.toString());
+    
+    // Save email
+    await emailStorage.saveEmail(email, 'waitlist', {
+      productViewed: productId,
+    });
     
     console.log('📝 WAITLIST SIGNUP:', { email, productId, position: newCount });
     

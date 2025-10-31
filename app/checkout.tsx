@@ -12,13 +12,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCart } from "@/providers/CartProvider";
 import { useAuth } from "@/providers/AuthProvider";
+import { useMarketing } from "@/providers/MarketingProvider";
 import { router } from "expo-router";
 import { CreditCard, MapPin, Check } from "lucide-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { emailStorage } from "@/lib/emailStorage";
+import { ReminderSystem } from "@/lib/reminderSystem";
 
 export default function CheckoutScreen() {
   const { items, clearCart, getTotal } = useCart();
   const { user, updateTotalSpent, isAuthenticated } = useAuth();
+  const marketing = useMarketing();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"shipping" | "payment" | "review">("shipping");
   
@@ -139,6 +143,24 @@ export default function CheckoutScreen() {
       
       // Update user's total spent
       updateTotalSpent(total);
+      
+      // Mark cart as recovered (if it was abandoned)
+      const email = shippingInfo.email || user?.email;
+      if (email) {
+        await ReminderSystem.markCartRecovered(email);
+        await emailStorage.saveEmail(email, 'checkout', {
+          cartValue: total,
+          cartItems: items,
+        });
+        
+        // Send post-purchase email
+        await marketing.sendPostPurchaseEmail(email, {
+          orderId,
+          total,
+          items: order.items,
+          shippingInfo,
+        });
+      }
       
       // Clear cart
       await clearCart();
