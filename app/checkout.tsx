@@ -53,14 +53,8 @@ export default function CheckoutScreen() {
 
   React.useEffect(() => {
     if (!isAuthenticated) {
-      Alert.alert(
-        "Authentication Required",
-        "Please sign in to continue with checkout",
-        [
-          { text: "Sign In", onPress: () => router.replace("/login") },
-        ],
-        { cancelable: false }
-      );
+      // Redirect to login if not authenticated, allow back navigation
+      router.replace("/login");
     }
   }, [isAuthenticated]);
 

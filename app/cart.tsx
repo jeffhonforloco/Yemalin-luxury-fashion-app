@@ -29,18 +29,8 @@ export default function CartScreen() {
       return;
     }
     if (!isAuthenticated) {
-      if (Platform.OS === 'web') {
-        router.push("/login");
-      } else {
-        Alert.alert(
-          "Sign In Required",
-          "Please sign in to continue with checkout",
-          [
-            { text: "Cancel", style: "cancel" },
-            { text: "Sign In", onPress: () => router.push("/login") },
-          ]
-        );
-      }
+      // Navigate to login - user can continue as guest or sign in
+      router.push("/login");
       return;
     }
     router.push("/checkout");

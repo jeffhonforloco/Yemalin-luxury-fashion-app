@@ -102,14 +102,18 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            {router.canGoBack() && (
-              <TouchableOpacity 
-                style={styles.closeButton}
-                onPress={() => router.back()}
-              >
-                <X size={24} color="#000" />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity 
+              style={styles.closeButton}
+              onPress={() => {
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace("/(tabs)");
+                }
+              }}
+            >
+              <X size={24} color="#000" />
+            </TouchableOpacity>
             <Text style={styles.logo}>YÈMALÍN</Text>
             <Text style={styles.tagline}>LUXURY ESSENTIALS</Text>
           </View>
