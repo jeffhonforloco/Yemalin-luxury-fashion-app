@@ -105,6 +105,14 @@ export default function ShopScreen() {
           )}
         </TouchableOpacity>
       </View>
+      
+      {/* Promotional Banner */}
+      <View style={styles.promoBanner}>
+        <Text style={styles.promoText}>ED. SALE UP TO 70% OFF . MORE STYLES ADDED . SALE UP TO 70%</Text>
+        <TouchableOpacity style={styles.promoButton}>
+          <Text style={styles.promoButtonText}>SHOP NOW</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Filters */}
       {showFilters && (
@@ -210,6 +218,9 @@ export default function ShopScreen() {
       
       {/* Products Grid */}
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.sectionTitleContainer}>
+          <Text style={styles.sectionTitle}>ALL COLLECTIONS</Text>
+        </View>
         <View style={styles.productsGrid}>
           {filteredProducts.map((product) => (
             <TouchableOpacity
@@ -218,10 +229,15 @@ export default function ShopScreen() {
               onPress={() => router.push(`/product/${product.id}`)}
               activeOpacity={0.9}
             >
+              {product.stock <= 5 && product.stock > 0 && (
+                <View style={styles.newBadge}>
+                  <Text style={styles.newBadgeText}>NEW ARRIVAL</Text>
+                </View>
+              )}
               <Image source={{ uri: product.image }} style={styles.productImage} testID="shopProductImage" />
               <View style={styles.productInfo}>
                 <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productPrice}>${product.price}</Text>
+                <Text style={styles.productPrice}>${product.price} USD</Text>
                 {product.stock <= 5 && product.stock > 0 && (
                   <Text style={styles.scarcityText}>Only {product.stock} left</Text>
                 )}
@@ -252,9 +268,52 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   title: {
-    fontSize: 24,
-    fontWeight: "300" as const,
+    fontSize: 28,
+    fontWeight: "700" as const,
     letterSpacing: 2,
+    textTransform: "uppercase" as any,
+  },
+  promoBanner: {
+    backgroundColor: "#000",
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  promoText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "600" as const,
+    letterSpacing: 1,
+    textTransform: "uppercase" as any,
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  promoButton: {
+    borderWidth: 2,
+    borderColor: "#fff",
+    backgroundColor: "transparent",
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+  },
+  promoButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600" as const,
+    letterSpacing: 2,
+    textTransform: "uppercase" as any,
+  },
+  sectionTitleContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 32,
+    fontWeight: "700" as const,
+    color: "#000",
+    letterSpacing: 2,
+    textTransform: "uppercase" as any,
   },
   filterButton: {
     position: "relative",
@@ -362,7 +421,8 @@ const styles = StyleSheet.create({
     }),
   },
   productCard: {
-    marginBottom: 20,
+    marginBottom: 30,
+    position: "relative",
     ...(Platform.OS === 'web' ? {
       width: '48%' as const,
       minWidth: 280,
@@ -373,32 +433,49 @@ const styles = StyleSheet.create({
       margin: 5,
     }),
   },
+  newBadge: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    backgroundColor: "#000",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    zIndex: 1,
+  },
+  newBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "700" as const,
+    letterSpacing: 1,
+    textTransform: "uppercase" as any,
+  },
   productImage: {
     width: "100%",
-    backgroundColor: "#f5f5f5",
-    marginBottom: 10,
-    borderRadius: 4,
+    backgroundColor: "#fff",
+    marginBottom: 12,
     ...(Platform.OS === 'web' ? {
-      // Keep full product visible on web
-      aspectRatio: 4/5,
+      aspectRatio: 3/4,
       objectFit: 'contain' as const,
       resizeMode: 'contain' as const,
     } : {
-      height: 250,
-      resizeMode: 'cover' as const,
+      height: 280,
+      resizeMode: 'contain' as const,
     }),
   },
   productInfo: {
-    gap: 4,
+    gap: 6,
   },
   productName: {
     fontSize: 14,
-    fontWeight: "500" as const,
+    fontWeight: "600" as const,
     letterSpacing: 0.5,
+    color: "#000",
+    textTransform: "uppercase" as any,
   },
   productPrice: {
     fontSize: 16,
-    fontWeight: "300" as const,
+    fontWeight: "700" as const,
+    color: "#000",
   },
   scarcityText: {
     fontSize: 12,

@@ -33,27 +33,15 @@ function WebNavBar() {
   return (
     <View style={styles.webNavBar}>
       <View style={styles.webNavContent}>
-        {/* Left section - Home/YÈMALÍN */}
+        {/* Left section - Logo */}
         <View style={styles.webNavLeft}>
-          {leftNavItems.map((item) => {
-            const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
-            return (
-              <TouchableOpacity
-                key={item.name}
-                style={[styles.webNavItem, isActive && styles.webNavItemActive]}
-                onPress={() => router.push(item.path as any)}
-              >
-                <item.icon 
-                  size={20} 
-                  color={isActive ? "#000" : "#666"} 
-                  strokeWidth={isActive ? 2 : 1.5}
-                />
-                <Text style={[styles.webNavText, isActive && styles.webNavTextActive]}>
-                  {item.title}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+          <TouchableOpacity
+            style={styles.webLogoContainer}
+            onPress={() => router.push("/")}
+          >
+            <Text style={styles.webLogo}>YÈMALÍN</Text>
+            <Text style={styles.webLogoSubtext}>LUXURY ESSENTIALS</Text>
+          </TouchableOpacity>
         </View>
         
         {/* Center section - Shop and VIP */}
@@ -66,11 +54,6 @@ function WebNavBar() {
                 style={[styles.webNavItem, isActive && styles.webNavItemActive]}
                 onPress={() => router.push(item.path as any)}
               >
-                <item.icon 
-                  size={20} 
-                  color={isActive ? "#000" : "#666"} 
-                  strokeWidth={isActive ? 2 : 1.5}
-                />
                 <Text style={[styles.webNavText, isActive && styles.webNavTextActive]}>
                   {item.title}
                 </Text>
@@ -79,27 +62,14 @@ function WebNavBar() {
           })}
         </View>
         
-        {/* Right section - Profile and Cart */}
+        {/* Right section - Profile, Wishlist, Search, Cart */}
         <View style={styles.webNavRight}>
-          {rightNavItems.map((item) => {
-            const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
-            return (
-              <TouchableOpacity
-                key={item.name}
-                style={[styles.webNavItem, isActive && styles.webNavItemActive]}
-                onPress={() => router.push(item.path as any)}
-              >
-                <item.icon 
-                  size={20} 
-                  color={isActive ? "#000" : "#666"} 
-                  strokeWidth={isActive ? 2 : 1.5}
-                />
-                <Text style={[styles.webNavText, isActive && styles.webNavTextActive]}>
-                  {item.title}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+          <TouchableOpacity 
+            style={styles.webNavIcon}
+            onPress={() => router.push("/profile")}
+          >
+            <User color="#000" size={20} strokeWidth={1.5} />
+          </TouchableOpacity>
           
           <TouchableOpacity 
             style={styles.webCartButton}
@@ -187,8 +157,8 @@ export default function TabLayout() {
           borderBottomColor: "#f0f0f0",
         },
         headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: "300" as const,
+          fontSize: 28,
+          fontWeight: "700" as const,
           letterSpacing: 2,
         },
         tabBarStyle: {
@@ -308,19 +278,39 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
   },
+  webLogoContainer: {
+    alignItems: "flex-start",
+  },
+  webLogo: {
+    fontSize: 28,
+    fontWeight: "700" as const,
+    letterSpacing: 2,
+    color: "#000",
+    marginBottom: 2,
+  },
+  webLogoSubtext: {
+    fontSize: 10,
+    fontWeight: "400" as const,
+    letterSpacing: 1.5,
+    color: "#000",
+    textTransform: "uppercase" as any,
+  },
   webNavCenter: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 60,
+    gap: 40,
     flex: 1,
     justifyContent: "center",
   },
   webNavRight: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 20,
+    gap: 16,
     flex: 1,
     justifyContent: "flex-end",
+  },
+  webNavIcon: {
+    padding: 8,
   },
   webNavItem: {
     flexDirection: "row",

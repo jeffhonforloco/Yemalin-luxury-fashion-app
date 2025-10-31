@@ -113,33 +113,18 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Exclusive Access Banner */}
-        <Animated.View style={[styles.exclusiveBanner, { opacity: fadeAnim }]}>
-          <Crown color="#FFD700" size={16} />
-          <Text style={styles.exclusiveText}>EXCLUSIVE PRE-LAUNCH ACCESS</Text>
-          <Crown color="#FFD700" size={16} />
-        </Animated.View>
+        {/* Global Announcement Bar */}
+        <View style={styles.announcementBar}>
+          <Text style={styles.announcementText}>
+            FREE RETURNS AND FREE SHIPPING ON US ORDERS $75+
+          </Text>
+        </View>
         
         {/* Header */}
-        <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logo}>YÈMALÍN</Text>
-            <View style={styles.logoAccents}>
-              <View style={styles.logoLine} />
-              <Text style={styles.logoSubtext}>ULTRA-EXCLUSIVE</Text>
-              <View style={styles.logoLine} />
-            </View>
-          </View>
-          <Text style={styles.tagline}>Where Luxury Meets Scarcity</Text>
-          <View style={styles.waitlistStats}>
-            <Users color="#666" size={14} />
-            <Text style={styles.waitlistText}>{waitlistCount.toLocaleString()} elite members</Text>
-          </View>
-          <View style={styles.exclusivityBadge}>
-            <Crown color="#FFD700" size={12} />
-            <Text style={styles.exclusivityText}>INVITATION ONLY</Text>
-          </View>
-        </Animated.View>
+        <View style={styles.header}>
+          <Text style={styles.logo}>YÈMALÍN</Text>
+          <Text style={styles.logoSubtext}>LUXURY ESSENTIALS</Text>
+        </View>
 
         {/* Countdown Timer */}
         <View style={styles.countdownSection}>
@@ -183,55 +168,40 @@ export default function HomeScreen() {
             style={styles.heroImage}
           />
           <View style={styles.heroOverlay}>
-            <View style={styles.urgencyBadge}>
-              <Zap color="#FFD700" size={16} />
-              <Text style={styles.urgencyText}>ALMOST SOLD OUT</Text>
-            </View>
             <Text style={styles.heroTitle}>FINAL PIECES</Text>
             <Text style={styles.heroSubtitle}>Last chance before restock</Text>
-            <View style={styles.shopNowButton}>
-              <Text style={styles.shopNowText}>SECURE YOURS</Text>
-              <ArrowRight color="#fff" size={20} />
-            </View>
+            <TouchableOpacity style={styles.shopNowButton}>
+              <Text style={styles.shopNowText}>SHOP NOW</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
 
-        {/* Critical Stock Alert */}
-        <View style={styles.criticalSection}>
-          <View style={styles.criticalHeader}>
-            <Bell color="#d32f2f" size={20} />
-            <Text style={styles.criticalTitle}>CRITICAL STOCK ALERT</Text>
-          </View>
-          <Text style={styles.criticalSubtext}>These pieces are flying off our shelves</Text>
+        {/* New Arrivals Section */}
+        <View style={styles.newArrivalsSection}>
+          <Text style={styles.sectionTitle}>NEW ARRIVALS</Text>
           
           <View style={styles.productsGrid}>
             {featuredProducts.map((product) => (
               <TouchableOpacity
                 key={product.id}
-                style={styles.criticalProductCard}
+                style={styles.productCard}
                 onPress={() => {
                   marketing.trackConversion('product_view_from_homepage', { productId: product.id, stock: product.stock });
                   router.push(`/product/${product.id}`);
                 }}
                 activeOpacity={0.9}
               >
-                <View style={styles.stockBadge}>
-                  <Text style={styles.stockBadgeText}>{product.stock} LEFT</Text>
-                </View>
+                {product.stock <= 5 && (
+                  <View style={styles.newBadge}>
+                    <Text style={styles.newBadgeText}>NEW ARRIVAL</Text>
+                  </View>
+                )}
                 <Image source={{ uri: product.image }} style={styles.productImage} />
                 <View style={styles.productInfo}>
                   <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productPrice}>${product.price}</Text>
-                  <View style={styles.urgencyIndicator}>
-                    <View style={[styles.urgencyDot, { backgroundColor: product.stock <= 2 ? '#d32f2f' : '#ff9800' }]} />
-                    <Text style={styles.urgencyLabel}>
-                      {product.stock <= 2 ? 'FINAL PIECES' : 'LOW STOCK'}
-                    </Text>
-                  </View>
-                  {marketing.scarcityMessages.enabled && product.stock <= marketing.scarcityMessages.lowStockThreshold && (
-                    <Text style={styles.scarcityMessage}>
-                      {marketing.scarcityMessages.messages[0].replace('{stock}', product.stock.toString())}
-                    </Text>
+                  <Text style={styles.productPrice}>${product.price} USD</Text>
+                  {product.stock <= 5 && product.stock > 0 && (
+                    <Text style={styles.stockText}>Only {product.stock} left</Text>
                   )}
                 </View>
               </TouchableOpacity>
@@ -440,48 +410,43 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  exclusiveBanner: {
-    flexDirection: "row",
+  announcementBar: {
+    backgroundColor: "#000",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#000",
-    paddingVertical: 8,
-    gap: 8,
   },
-  exclusiveText: {
-    color: "#FFD700",
-    fontSize: 12,
+  announcementText: {
+    color: "#fff",
+    fontSize: 11,
     fontWeight: "600" as const,
     letterSpacing: 1,
+    textTransform: "uppercase" as any,
+    textAlign: "center",
   },
   header: {
     alignItems: "center",
-    paddingVertical: 20,
+    justifyContent: "center",
+    paddingVertical: 24,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
-  waitlistStats: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginTop: 8,
-  },
-  waitlistText: {
-    fontSize: 12,
-    color: "#666",
-    fontWeight: "500" as const,
-  },
   logo: {
-    fontSize: 28,
-    fontWeight: "300" as const,
-    letterSpacing: 4,
+    fontSize: 36,
+    fontWeight: "700" as const,
+    letterSpacing: 3,
     color: "#000",
+    textAlign: "center",
+    marginBottom: 4,
   },
-  tagline: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 4,
-    letterSpacing: 1,
+  logoSubtext: {
+    fontSize: 11,
+    fontWeight: "400" as const,
+    letterSpacing: 1.5,
+    color: "#000",
+    textTransform: "uppercase" as any,
   },
   countdownSection: {
     alignItems: "center",
@@ -522,7 +487,7 @@ const styles = StyleSheet.create({
   heroImage: {
     width: "100%",
     height: "100%",
-    resizeMode: "contain",
+    resizeMode: "cover",
     backgroundColor: "#f5f5f5",
   },
   heroOverlay: {
@@ -531,81 +496,50 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 30,
-    backgroundColor: "rgba(0,0,0,0.6)",
-  },
-  urgencyBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 215, 0, 0.2)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    alignSelf: "flex-start",
-    marginBottom: 12,
-    gap: 6,
-  },
-  urgencyText: {
-    color: "#FFD700",
-    fontSize: 12,
-    fontWeight: "700" as const,
-    letterSpacing: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   heroTitle: {
-    fontSize: 32,
-    fontWeight: "300" as const,
+    fontSize: 42,
+    fontWeight: "700" as const,
     color: "#fff",
     letterSpacing: 2,
     marginBottom: 8,
+    textTransform: "uppercase" as any,
   },
   heroSubtitle: {
     fontSize: 16,
     color: "#fff",
-    opacity: 0.9,
-    marginBottom: 20,
+    fontWeight: "400" as const,
+    marginBottom: 24,
+    letterSpacing: 0.5,
   },
   shopNowButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+    borderWidth: 2,
+    borderColor: "#fff",
+    backgroundColor: "transparent",
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    alignSelf: "flex-start",
   },
   shopNowText: {
     color: "#fff",
     fontSize: 14,
     fontWeight: "600" as const,
-    letterSpacing: 1,
+    letterSpacing: 2,
+    textTransform: "uppercase" as any,
   },
-  criticalSection: {
-    padding: 20,
+  newArrivalsSection: {
+    paddingVertical: 40,
+    paddingHorizontal: 20,
     backgroundColor: "#fff",
-    borderTopWidth: 3,
-    borderTopColor: "#d32f2f",
-  },
-  criticalHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginBottom: 8,
-  },
-  criticalTitle: {
-    fontSize: 18,
-    fontWeight: "700" as const,
-    color: "#d32f2f",
-    letterSpacing: 1,
-  },
-  criticalSubtext: {
-    fontSize: 14,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 20,
-    fontStyle: "italic",
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "300" as const,
+    fontSize: 32,
+    fontWeight: "700" as const,
+    color: "#000",
     letterSpacing: 2,
-    marginBottom: 20,
-    textAlign: "center",
+    marginBottom: 30,
+    textTransform: "uppercase" as any,
   },
   productsGrid: {
     flexDirection: "row",
@@ -619,78 +553,64 @@ const styles = StyleSheet.create({
       paddingHorizontal: 20,
     }),
   },
-  criticalProductCard: {
+  productCard: {
     width: Platform.OS === 'web' ? '48%' as const : (width - 50) / 2,
-    marginBottom: 20,
+    marginBottom: 30,
     position: "relative",
-    borderWidth: 2,
-    borderColor: "#d32f2f",
-    borderRadius: 8,
-    overflow: "hidden",
     ...(Platform.OS === 'web' && {
       minWidth: 280,
-      maxWidth: 380,
+      maxWidth: 400,
       flex: 1,
     }),
   },
-  stockBadge: {
+  newBadge: {
     position: "absolute",
     top: 8,
-    right: 8,
-    backgroundColor: "#d32f2f",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    left: 8,
+    backgroundColor: "#000",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     zIndex: 1,
   },
-  stockBadgeText: {
+  newBadgeText: {
     color: "#fff",
     fontSize: 10,
     fontWeight: "700" as const,
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    textTransform: "uppercase" as any,
   },
   productImage: {
     width: "100%",
-    backgroundColor: "#f5f5f5",
-    marginBottom: 10,
+    backgroundColor: "#fff",
+    marginBottom: 12,
     ...(Platform.OS === 'web' ? {
-      aspectRatio: 4/3,
+      aspectRatio: 3/4,
       resizeMode: 'contain' as const,
       objectFit: 'contain' as const,
     } : {
-      height: 250,
-      resizeMode: 'cover' as const,
+      height: 280,
+      resizeMode: 'contain' as const,
     }),
   },
   productInfo: {
-    gap: 4,
-    padding: 12,
-  },
-  urgencyIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
     gap: 6,
-    marginTop: 4,
-  },
-  urgencyDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  urgencyLabel: {
-    fontSize: 11,
-    fontWeight: "600" as const,
-    color: "#d32f2f",
-    letterSpacing: 0.5,
   },
   productName: {
     fontSize: 14,
-    fontWeight: "500" as const,
+    fontWeight: "600" as const,
     letterSpacing: 0.5,
+    color: "#000",
+    textTransform: "uppercase" as any,
   },
   productPrice: {
     fontSize: 16,
-    fontWeight: "300" as const,
+    fontWeight: "700" as const,
+    color: "#000",
+  },
+  stockText: {
+    fontSize: 12,
+    color: "#666",
+    fontStyle: "italic",
   },
   soldOutSection: {
     padding: 20,
