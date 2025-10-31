@@ -243,6 +243,14 @@ function RootLayoutNav() {
           presentation: "card"
         }} 
       />
+      <Stack.Screen 
+        name="admin" 
+        options={{ 
+          title: "Admin Dashboard",
+          presentation: "card",
+          headerShown: false,
+        }} 
+      />
       </Stack>
     </>
   );

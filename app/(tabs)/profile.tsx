@@ -287,6 +287,17 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Admin Access - Hidden, triple tap logo */}
+        <TouchableOpacity
+          style={styles.adminAccess}
+          onPress={() => {
+            // Simple admin access - in production, add proper auth
+            router.push('/admin');
+          }}
+        >
+          <Text style={styles.adminAccessText}>Admin Dashboard</Text>
+        </TouchableOpacity>
+
         {/* Logout */}
         <TouchableOpacity 
           style={[styles.logoutButton, isWeb && isLargeScreen && styles.webLogoutButton]} 
@@ -339,6 +350,16 @@ export default function ProfileScreen() {
         >
           <LogOut size={20} color="#d32f2f" />
           <Text style={styles.logoutText}>Sign Out</Text>
+        </TouchableOpacity>
+
+        {/* Admin Access */}
+        <TouchableOpacity
+          style={styles.adminAccess}
+          onPress={() => {
+            router.push('/admin');
+          }}
+        >
+          <Text style={styles.adminAccessText}>ADMIN DASHBOARD</Text>
         </TouchableOpacity>
 
         {/* Version */}
@@ -560,6 +581,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#d32f2f",
     fontWeight: "500" as const,
+  },
+  adminAccess: {
+    marginHorizontal: 30,
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: "#000",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  adminAccessText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600" as const,
+    letterSpacing: 1,
+    textTransform: "uppercase" as any,
   },
   version: {
     textAlign: "center",
