@@ -22,10 +22,12 @@ import {
   ArrowLeft,
   X,
   CheckCircle,
+  Settings,
 } from 'lucide-react-native';
 import { emailStorage } from '@/lib/emailStorage';
+import BackendTestEnhanced from '@/components/BackendTestEnhanced';
 
-type TabType = 'dashboard' | 'emails' | 'carts' | 'analytics' | 'orders';
+type TabType = 'dashboard' | 'emails' | 'carts' | 'analytics' | 'orders' | 'backend';
 
 export default function AdminScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -403,6 +405,15 @@ export default function AdminScreen() {
     );
   };
 
+  const renderBackend = () => {
+    return (
+      <View style={styles.tabContent}>
+        <Text style={styles.tabTitle}>BACKEND CONNECTION TEST</Text>
+        <BackendTestEnhanced />
+      </View>
+    );
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -415,6 +426,8 @@ export default function AdminScreen() {
         return renderAnalytics();
       case 'orders':
         return renderOrders();
+      case 'backend':
+        return renderBackend();
       default:
         return renderDashboard();
     }
@@ -488,6 +501,16 @@ export default function AdminScreen() {
           <CheckCircle size={16} color={activeTab === 'orders' ? '#000' : '#666'} />
           <Text style={[styles.tabText, activeTab === 'orders' && styles.activeTabText]}>
             ORDERS
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'backend' && styles.activeTab]}
+          onPress={() => setActiveTab('backend')}
+        >
+          <Settings size={16} color={activeTab === 'backend' ? '#000' : '#666'} />
+          <Text style={[styles.tabText, activeTab === 'backend' && styles.activeTabText]}>
+            BACKEND
           </Text>
         </TouchableOpacity>
       </ScrollView>
